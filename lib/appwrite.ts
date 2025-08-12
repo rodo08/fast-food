@@ -13,7 +13,12 @@ export const appwriteConfig = {
   platform: "com.rodo08.foodordering",
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
   databaseId: "689b0e87002ac0c33e83",
+  bucketId: "689b56d8001867d4543a",
   userCollectionId: "689b0f600032bd3f7687",
+  categoriesCollectionId: "689b526d002659911f58",
+  menuCollectionId: "689b53190027b9095a8c",
+  customizationsCollectionId: "689b54ba002cd3cd0cc2",
+  menuCustomizationCollectionId: "689b55ce000270a98a4a",
 };
 
 export const client = new Client();
