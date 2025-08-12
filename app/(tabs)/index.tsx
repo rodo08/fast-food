@@ -1,5 +1,4 @@
 import { images, offers } from "@/constants";
-import useAuthStore from "@/store/auth.store";
 import cn from "clsx";
 import {
   FlatList,
@@ -14,7 +13,7 @@ import CartButton from "../../components/CartButton";
 import "../globals.css";
 
 export default function Index() {
-  const { user } = useAuthStore();
+  //const { user } = useAuthStore();
   // console.log("USER", JSON.stringify(user, null, 2));
 
   return (
