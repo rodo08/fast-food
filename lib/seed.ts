@@ -106,6 +106,8 @@ async function uploadImageToStorage(imageUrl: string) {
 }
 
 async function seed(): Promise<void> {
+  console.log("🔹 Starting seed...");
+
   // 1. Clear all
   await clearAll(appwriteConfig.categoriesCollectionId);
   await clearAll(appwriteConfig.customizationsCollectionId);
@@ -116,65 +118,79 @@ async function seed(): Promise<void> {
   // 2. Create Categories
   const categoryMap: Record<string, string> = {};
   for (const cat of data.categories) {
-    const doc = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.categoriesCollectionId,
-      ID.unique(),
-      cat
-    );
-    categoryMap[cat.name] = doc.$id;
+    try {
+      const doc = await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.categoriesCollectionId,
+        ID.unique(),
+        cat
+      );
+      categoryMap[cat.name] = doc.$id;
+    } catch (err) {
+      console.error(`❌ Failed to create category ${cat.name}:`, err);
+    }
   }
 
   // 3. Create Customizations
   const customizationMap: Record<string, string> = {};
   for (const cus of data.customizations) {
-    const doc = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.customizationsCollectionId,
-      ID.unique(),
-      {
-        name: cus.name,
-        price: cus.price,
-        type: cus.type,
-      }
-    );
-    customizationMap[cus.name] = doc.$id;
+    try {
+      const doc = await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.customizationsCollectionId,
+        ID.unique(),
+        { name: cus.name, price: cus.price, type: cus.type }
+      );
+      customizationMap[cus.name] = doc.$id;
+    } catch (err) {
+      console.error(`❌ Failed to create customization ${cus.name}:`, err);
+    }
   }
 
   // 4. Create Menu Items
   const menuMap: Record<string, string> = {};
   for (const item of data.menu) {
-    const uploadedImage = await uploadImageToStorage(item.image_url);
+    try {
+      const uploadedImage = await uploadImageToStorage(item.image_url);
 
-    const doc = await databases.createDocument(
-      appwriteConfig.databaseId,
-      appwriteConfig.menuCollectionId,
-      ID.unique(),
-      {
-        name: item.name,
-        description: item.description,
-        image_url: uploadedImage,
-        price: item.price,
-        rating: item.rating,
-        calories: item.calories,
-        protein: item.protein,
-        categories: categoryMap[item.category_name],
-      }
-    );
-
-    menuMap[item.name] = doc.$id;
-
-    // 5. Create menu_customizations
-    for (const cusName of item.customizations) {
-      await databases.createDocument(
+      const doc = await databases.createDocument(
         appwriteConfig.databaseId,
-        appwriteConfig.menuCustomizationsCollectionId,
+        appwriteConfig.menuCollectionId,
         ID.unique(),
         {
-          menu: doc.$id,
-          customizations: customizationMap[cusName],
+          name: item.name,
+          description: item.description,
+          image_url: uploadedImage,
+          price: item.price,
+          rating: item.rating,
+          calories: item.calories,
+          protein: item.protein,
+          categories: categoryMap[item.category_name],
         }
       );
+      menuMap[item.name] = doc.$id;
+
+      // 5. Create menu_customizations
+      for (const cusName of item.customizations) {
+        try {
+          await databases.createDocument(
+            appwriteConfig.databaseId,
+            appwriteConfig.menuCustomizationsCollectionId,
+            ID.unique(),
+            {
+              menu: doc.$id,
+              customizations: customizationMap[cusName],
+            }
+          );
+        } catch (err) {
+          console.error(
+            `❌ Failed to link customization ${cusName} to menu ${item.name}:`,
+            err
+          );
+        }
+      }
+    } catch (err) {
+      console.error(`❌ Failed to create menu item ${item.name}:`, err);
     }
   }
 

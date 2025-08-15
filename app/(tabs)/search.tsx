@@ -1,10 +1,10 @@
 import CartButton from "@/components/CartButton";
 import { getCategories, getMenu } from "@/lib/appwrite";
 import useAppwrite from "@/lib/useAppwrite";
+import cn from "clsx";
 import { useLocalSearchParams } from "expo-router";
 import React, { useEffect } from "react";
 import { FlatList, Text, View } from "react-native";
-
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const Search = () => {
@@ -25,7 +25,7 @@ const Search = () => {
   });
 
   useEffect(() => {
-    refetch({ category, query, limit: 6 });
+    refetch({ category, query, limit: 12 });
   }, [category, query]);
 
   console.log(data);
@@ -34,8 +34,15 @@ const Search = () => {
       <FlatList
         data={data}
         renderItem={({ item, index }) => {
+          const isFirstRightColItem = index % 2 === 0;
+
           return (
-            <View className="flex-1 max-w-[48%]">
+            <View
+              className={cn(
+                "flex-1 max-w-[48%]",
+                !isFirstRightColItem ? "mt-10" : "mt-0"
+              )}
+            >
               <Text>Menu Card</Text>
             </View>
           );
@@ -70,20 +77,5 @@ const Search = () => {
     </SafeAreaView>
   );
 };
-
-// const Search = () => {
-//   return (
-//     <SafeAreaView className="bg-white h-full">
-//       <Text>Search</Text>
-
-//       <Button
-//         title="SEED"
-//         onPress={() => {
-//           seed().catch((error) => console.log("Failed to seed DDBB", error));
-//         }}
-//       />
-//     </SafeAreaView>
-//   );
-// };
 
 export default Search;

@@ -95,13 +95,13 @@ export const getCurrentUser = async () => {
   }
 };
 
-export const getMenu = async ({ category, query }: GetMenuParams) => {
+export const getMenu = async ({ category, query, limit }: GetMenuParams) => {
   try {
     const queries: string[] = [];
 
     if (category) queries.push(Query.equal("categories", category));
-
     if (query) queries.push(Query.search("name", query));
+    if (limit) queries.push(Query.limit(limit));
 
     const menus = await databases.listDocuments(
       appwriteConfig.databaseId,
