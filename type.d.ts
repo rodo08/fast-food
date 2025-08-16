@@ -90,7 +90,7 @@ interface ProfileFieldProps {
   icon: ImageSourcePropType;
 }
 
-interface CreateUserPrams {
+interface CreateUserParams {
   email: string;
   password: string;
   name: string;
@@ -104,5 +104,4 @@ interface SignInParams {
 interface GetMenuParams {
   category: string;
   query: string;
-  limit: number;
 }
