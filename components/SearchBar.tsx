@@ -20,7 +20,7 @@ const Searchbar = () => {
   return (
     <View className="searchbar">
       <TextInput
-        className="flex-1 p-5"
+        className="flex-1 p-5 bg-slate-200 rounded-full"
         placeholder="Search for..."
         value={query}
         onChangeText={handleSearch}
